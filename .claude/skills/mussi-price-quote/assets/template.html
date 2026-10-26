@@ -1,0 +1,331 @@
+<title>הצעת מחיר – סנכרון משולם</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@500;700;800&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: airy single column; soft colour hero, friendly stage cards, live dashboard preview, then price + approval as one closing card */
+:root{
+  --bg:#f7fbfc; --surface:#ffffff; --ink:#15303a; --muted:#5e7580; --line:#e1ecef;
+  --accent:#12a38f; --accent-ink:#0b7768; --accent-soft:#dff5f0;
+  --sky:#e4f1fd; --sun:#ffe9a8; --sun-ink:#8a5a00; --peach:#ffe3d6;
+  --bad:#d4483c; --bad-soft:#fde7e4; --good:#2e8b45; --good-soft:#e3f4e7; --warn:#a86a00; --warn-soft:#fff2d6;
+  --display:"Rubik","Assistant",system-ui,sans-serif;
+  --body:"Assistant",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+/* Single light look on purpose: always bright and clean, whatever the viewer's theme */
+:root{color-scheme:light}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.65}
+.wrap{max-width:820px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.2;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.9rem,5vw,2.7rem);font-weight:800}
+h2{font-size:1.5rem;font-weight:700}
+h3{font-size:1.05rem;font-weight:700}
+p{margin:0}
+.note{font-size:.92rem;color:var(--muted)}
+
+.hero{background:linear-gradient(135deg,var(--accent-soft) 0%,var(--sky) 60%,var(--peach) 100%)}
+.hero .wrap{padding-block:44px 52px;display:grid;gap:14px}
+.tag{justify-self:start;background:var(--surface);color:var(--accent-ink);font-weight:700;font-size:.85rem;border-radius:999px;padding:4px 14px}
+.hero .lead{font-size:1.18rem;max-width:58ch}
+.hero .meta{color:var(--muted);font-size:.95rem}
+
+main.wrap{display:grid;gap:56px;padding-block:44px 64px}
+section{display:grid;gap:18px;min-width:0}
+.sec-head{display:grid;gap:6px}
+
+.issues{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.issue{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;display:grid;gap:6px;align-content:start}
+.issue b{font-size:1rem}
+.pill{justify-self:start;display:inline-block;padding:1px 10px;border-radius:999px;font-size:.8rem;font-weight:700;white-space:nowrap}
+.pill.bad{background:var(--bad-soft);color:var(--bad)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.good{background:var(--good-soft);color:var(--good)}
+
+.stages{display:grid;gap:12px}
+details{background:var(--surface);border:1px solid var(--line);border-radius:18px;transition:box-shadow .2s,border-color .2s}
+details[open]{border-color:var(--accent);box-shadow:0 6px 24px -14px var(--accent)}
+summary{cursor:pointer;list-style:none;padding:18px 20px;display:flex;gap:16px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:18px}
+.ico{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-family:var(--display);font-weight:800;font-size:1.15rem}
+.c1 .ico{background:var(--accent-soft);color:var(--accent-ink)}
+.c2 .ico{background:var(--sky);color:var(--ink)}
+.c3 .ico{background:var(--peach);color:var(--ink)}
+.c4 .ico{background:var(--sun);color:var(--sun-ink)}
+summary .t{font-family:var(--display);font-weight:700;font-size:1.1rem;display:block}
+summary .s{color:var(--muted);font-size:.93rem}
+.plus{margin-inline-start:auto;flex:none;width:30px;height:30px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;color:var(--muted);font-size:1.2rem;transition:transform .2s}
+details[open] .plus{transform:rotate(45deg);border-color:var(--accent);color:var(--accent-ink)}
+details ul{margin:0;padding:0 20px 20px;padding-inline-start:80px;display:grid;gap:8px}
+.new{font-family:var(--body);font-size:.75rem;font-weight:700;background:var(--sun);color:var(--sun-ink);border-radius:999px;padding:1px 10px;margin-inline-start:8px;vertical-align:middle}
+
+.dash{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:20px;display:grid;gap:16px;min-width:0;box-shadow:0 18px 40px -30px var(--ink)}
+.dash-head{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center}
+.dash-head b{font-family:var(--display);font-size:1.1rem}
+.sample{font-size:.8rem;font-weight:700;color:var(--sun-ink);background:var(--sun);border-radius:999px;padding:2px 10px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.kpi{border-radius:14px;padding:14px;display:grid;gap:2px}
+.kpi.bad{background:var(--bad-soft)} .kpi.warn{background:var(--warn-soft)} .kpi.good{background:var(--good-soft)} .kpi.plain{background:var(--sky)}
+.kpi .v{font-family:var(--display);font-weight:800;font-size:1.75rem;font-variant-numeric:tabular-nums;line-height:1.1}
+.kpi.bad .v{color:var(--bad)} .kpi.good .v{color:var(--good)} .kpi.warn .v{color:var(--warn)}
+.kpi .l{font-size:.86rem;color:var(--muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{font:inherit;font-weight:600;font-size:.92rem;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:5px 16px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.tabs button:focus-visible,.btn:focus-visible,.done:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%;font-size:.94rem}
+th,td{text-align:right;padding:10px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{color:var(--muted);font-weight:600;font-size:.84rem;background:var(--bg)}
+tr:last-child td{border-bottom:0}
+.num-cell{font-variant-numeric:tabular-nums;white-space:nowrap}
+.done{font:inherit;font-weight:600;font-size:.85rem;border:0;color:var(--accent-ink);background:var(--accent-soft);border-radius:999px;padding:3px 12px;cursor:pointer;white-space:nowrap}
+
+.flow{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;gap:10px;counter-reset:s}
+.flow li{counter-increment:s;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:6px 16px 6px 8px;display:flex;align-items:center;gap:8px;font-weight:600}
+.flow li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--surface);display:grid;place-items:center;font-size:.85rem;font-weight:700}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:8px;align-content:start}
+.box ul{margin:0;padding-inline-start:20px;display:grid;gap:6px}
+
+.close{background:linear-gradient(160deg,var(--accent-soft),var(--sky));border-radius:26px;padding:28px;display:grid;gap:22px}
+.price{display:flex;flex-wrap:wrap;gap:16px 32px;align-items:center;justify-content:space-between}
+.num{font-family:var(--display);font-weight:800;font-size:clamp(3rem,10vw,4.2rem);line-height:1;color:var(--accent-ink);font-variant-numeric:tabular-nums}
+.num small{font-size:.45em;margin-inline-start:4px}
+.price ul{margin:0;padding:0;list-style:none;display:grid;gap:4px;font-size:.95rem}
+.price li::before{content:"✓";display:inline-block;width:20px;color:var(--accent-ink);font-weight:800}
+.approve{background:var(--surface);border-radius:18px;padding:20px;display:grid;gap:14px}
+label{font-weight:600;font-size:.95rem}
+input[type=text]{font:inherit;width:100%;max-width:360px;box-sizing:border-box;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink)}
+input[type=text]:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.check{display:flex;gap:10px;align-items:flex-start;font-weight:400}
+.check input{margin-top:7px;accent-color:var(--accent);width:18px;height:18px}
+.btn{font:inherit;font-weight:700;font-size:1.02rem;background:var(--accent);color:var(--surface);border:0;border-radius:999px;padding:12px 28px;cursor:pointer;justify-self:start;transition:transform .15s}
+.btn:hover:not([disabled]){transform:translateY(-1px)}
+.btn[disabled]{opacity:.4;cursor:not-allowed}
+.msg{background:var(--accent-soft);border-radius:14px;padding:16px;display:grid;gap:10px}
+.msg textarea{font:inherit;font-size:.95rem;width:100%;box-sizing:border-box;min-height:96px;border:1px solid var(--line);border-radius:12px;padding:10px;background:var(--surface);color:var(--ink);resize:vertical}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding-block:0 40px}
+@media (max-width:480px){details ul{padding-inline-start:20px}.close{padding:20px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div dir="rtl" lang="he">
+
+<div class="hero">
+  <div class="wrap">
+    <span class="tag">הצעת מחיר · 26.10.2026</span>
+    <h1>כל תשלום ממשולם, מעודכן באוריגמי</h1>
+    <p class="lead">הו"ק או אשראי, כל תשלום ייכנס לבד ל-CRM. מנהלת המשרד תראה במסך אחד רק את מה שבאמת צריך טיפול, בלי להיכנס למשולם.</p>
+    <p class="meta">לכבוד מיכל כהן – תנועה משקמת · מאת מוסי סגל</p>
+  </div>
+</div>
+
+<main class="wrap">
+
+<section aria-labelledby="find-h">
+  <div class="sec-head">
+    <h2 id="find-h">מה מצאתי בבדיקה</h2>
+    <p class="note">החיבור בין משולם, Make ואוריגמי קיים, אבל חלק מהתהליכים כבויים או חלקיים.</p>
+  </div>
+  <div class="issues">
+    <div class="issue"><span class="pill warn">חלקי</span><b>תשלום הו"ק שעבר</b><span class="note">נרשם ב-CRM, אבל השגיאה הקודמת נשארת פתוחה</span></div>
+    <div class="issue"><span class="pill warn">חלקי</span><b>שגיאת תשלום</b><span class="note">רק הסירוב הראשון נרשם, ניסיונות חוזרים לא</span></div>
+    <div class="issue"><span class="pill bad">נעצר</span><b>הו"ק עם תיאור לא מזוהה</b><span class="note">התשלום לא נכנס ל-CRM בכלל</span></div>
+    <div class="issue"><span class="pill bad">כבוי</span><b>עסקת אשראי חד-פעמית</b><span class="note">עסקאות אשראי לא מסונכרנות</span></div>
+    <div class="issue"><span class="pill bad">כבוי</span><b>קבלות ממשולם</b><span class="note">168 קבלות ממתינות בתור</span></div>
+    <div class="issue"><span class="pill bad">לא קיים</span><b>סיכום בכרטיס לקוחה</b><span class="note">אין לצוות תמונה של מצב התשלומים</span></div>
+  </div>
+</section>
+
+<section aria-labelledby="get-h">
+  <div class="sec-head">
+    <h2 id="get-h">מה תקבלי</h2>
+    <p class="note">לחצי על כל שלב כדי לראות מה הוא כולל.</p>
+  </div>
+  <div class="stages">
+    <details class="c1" open>
+      <summary><span class="ico">1</span><span><span class="t">תיקון הסנכרון הקיים</span><span class="s">שגיאות שנסגרות לבד כשהתשלום עובר</span></span><span class="plus" aria-hidden="true">+</span></summary>
+      <ul>
+        <li>סגירת שגיאות אוטומטית: כשתשלום שסורב עובר, השגיאה משתנה ל"תוקן" עם תאריך וסכום.</li>
+        <li>ספירת ניסיונות: כל סירוב חוזר מעדכן את אותה שגיאה, בלי כפילויות.</li>
+        <li>מסלול גיבוי: תשלום עם תיאור לא מזוהה נכנס ל-CRM ושולח התראה לבדיקה.</li>
+      </ul>
+    </details>
+    <details class="c2">
+      <summary><span class="ico">2</span><span><span class="t">חיבור מלא למשולם החדשה</span><span class="s">כל סוגי התשלומים והקבלות נכנסים</span></span><span class="plus" aria-hidden="true">+</span></summary>
+      <ul>
+        <li>בדיקה שכל ההתראות ממשולם מוגדרות בחשבון החדש.</li>
+        <li>הפעלה מחדש של סנכרון עסקאות אשראי חד-פעמיות.</li>
+        <li>הפעלה מחדש של העלאת קבלות לכרטיס התשלום.</li>
+      </ul>
+    </details>
+    <details class="c3">
+      <summary><span class="ico">3</span><span><span class="t">שקיפות בכרטיס הלקוחה</span><span class="s">כל צוות המשרד רואה את מצב התשלומים</span></span><span class="plus" aria-hidden="true">+</span></summary>
+      <ul>
+        <li>לשונית תשלומים ושגיאות בכרטיס הלקוחה.</li>
+        <li>שדות סיכום: סה"כ שולם, תשלום אחרון, מספר תשלומים וסטטוס הו"ק (תקין / בשגיאה / הופסק).</li>
+      </ul>
+    </details>
+    <details class="c4">
+      <summary><span class="ico">4</span><span><span class="t">דשבורד למנהלת המשרד<span class="new">חדש</span></span><span class="s">רק מה שדורש טיפול, במסך אחד</span></span><span class="plus" aria-hidden="true">+</span></summary>
+      <ul>
+        <li>מסך באוריגמי שמציג רק שגיאות פתוחות. שגיאה שהתשלום שלה עבר בניסיון חוזר נעלמת מהרשימה לבד.</li>
+        <li>סדר לפי דחיפות: קודם לקוחות עם 3 סירובים ומעלה, או שגיאה שפתוחה יותר מ-7 ימים.</li>
+        <li>לחיצה על שורה פותחת את כרטיס הלקוחה, עם טלפון וקישור לעדכון פרטי אשראי.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<section aria-labelledby="dash-h">
+  <div class="sec-head">
+    <h2 id="dash-h">כך ייראה הדשבורד</h2>
+    <p class="note">אפשר לנסות: לחצי "טיפלתי" על שורה ועברי ללשונית "נסגרו לאחרונה".</p>
+  </div>
+  <div class="dash">
+    <div class="dash-head"><b>תשלומים לטיפול</b><span class="sample">נתוני דוגמה</span></div>
+    <div class="kpis">
+      <div class="kpi bad"><span class="v" id="k-open">4</span><span class="l">שגיאות פתוחות לטיפול</span></div>
+      <div class="kpi warn"><span class="v num-cell" id="k-sum">₪1,036</span><span class="l">ממתין לגבייה</span></div>
+      <div class="kpi good"><span class="v" id="k-auto">3</span><span class="l">נסגרו לבד השבוע</span></div>
+      <div class="kpi plain"><span class="v">1</span><span class="l">הו"ק שהופסקו החודש</span></div>
+    </div>
+    <div class="tabs" role="tablist" aria-label="תצוגה">
+      <button role="tab" id="tab-open" aria-selected="true" aria-controls="panel">לטיפול</button>
+      <button role="tab" id="tab-closed" aria-selected="false" aria-controls="panel">נסגרו לאחרונה</button>
+    </div>
+    <div class="tablewrap" id="panel" role="tabpanel">
+      <table>
+        <thead id="thead"></thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="order-h">
+  <h2 id="order-h">סדר העבודה</h2>
+  <ol class="flow">
+    <li>תיקון הסנכרון</li>
+    <li>משולם החדשה</li>
+    <li>כרטיס הלקוחה</li>
+    <li>דשבורד</li>
+  </ol>
+  <p class="note">כל שלב נבדק על תשלום אמיתי לפני שעוברים לבא. לפני כל שינוי נשמר עותק גיבוי, והעבודה בנויה לצרוך כמה שפחות אופרציות ב-Make.</p>
+  <div class="two">
+    <div class="box">
+      <h3>לא כלול</h3>
+      <ul>
+        <li>תהליכים חדשים שלא קשורים לתשלומים.</li>
+        <li>תיקון נתונים היסטוריים מעבר לקבלות שממתינות בתור.</li>
+      </ul>
+    </div>
+    <div class="box">
+      <h3>מה נדרש ממך</h3>
+      <ul>
+        <li>פרטי גישה לממשק משולם החדש, לבדיקת ההתראות.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section aria-labelledby="price-h">
+  <div class="close">
+    <div class="price">
+      <div style="display:grid;gap:6px">
+        <h2 id="price-h">המחיר</h2>
+        <div class="num">580<small>₪</small></div>
+        <p class="note">מחיר כולל לכל השלבים · תוקף ההצעה 30 יום</p>
+      </div>
+      <ul>
+        <li>תיקון הסנכרון הקיים</li>
+        <li>חיבור מלא למשולם החדשה</li>
+        <li>שקיפות בכרטיס הלקוחה</li>
+        <li>דשבורד למנהלת המשרד</li>
+      </ul>
+    </div>
+    <div class="approve">
+      <h3>לאישור ההצעה</h3>
+      <p>יש לכתוב בווטסאפ למוסי.</p>
+    </div>
+  </div>
+</section>
+
+</main>
+<footer>מוסי סגל · אוטומציות ו-CRM</footer>
+</div>
+
+<script>
+(function(){
+  var open = [
+    {n:'לקוחה לדוגמה 1', p:'05X-XXX-1111', prod:'מועדון', sum:79, why:'כרטיס חסום', tries:3, days:9},
+    {n:'לקוחה לדוגמה 2', p:'05X-XXX-2222', prod:'תוכנית ליווי', sum:450, why:'אין אישור מחברת האשראי', tries:2, days:5},
+    {n:'לקוחה לדוגמה 3', p:'05X-XXX-3333', prod:'מנטוריות', sum:428, why:'כרטיס פג תוקף', tries:1, days:2},
+    {n:'לקוחה לדוגמה 4', p:'05X-XXX-4444', prod:'מועדון', sum:79, why:'חריגה ממסגרת', tries:1, days:1}
+  ];
+  var closed = [
+    {n:'לקוחה לדוגמה 5', prod:'מועדון', sum:79, how:'שולם בניסיון חוזר', when:'לפני יומיים'},
+    {n:'לקוחה לדוגמה 6', prod:'תוכנית ליווי', sum:450, how:'שולם בניסיון חוזר', when:'לפני 3 ימים'},
+    {n:'לקוחה לדוגמה 7', prod:'מועדון', sum:79, how:'שולם בניסיון חוזר', when:'לפני 4 ימים'}
+  ];
+  var view = 'open';
+  var thead = document.getElementById('thead'), tbody = document.getElementById('tbody');
+  var shekel = function(v){ return '₪' + v.toLocaleString('he-IL'); };
+  function urgent(r){ return r.tries >= 3 || r.days > 7; }
+  function cell(text, cls){ var td = document.createElement('td'); if (cls) td.className = cls; td.textContent = text; return td; }
+  function render(){
+    thead.innerHTML = ''; tbody.innerHTML = '';
+    var hr = document.createElement('tr');
+    var heads = view === 'open'
+      ? ['לקוחה','מוצר','סכום','סיבה','ניסיונות','ימים פתוח','']
+      : ['לקוחה','מוצר','סכום','איך נסגר','מתי'];
+    heads.forEach(function(h){ var th = document.createElement('th'); th.textContent = h; hr.appendChild(th); });
+    thead.appendChild(hr);
+    if (view === 'open') {
+      var rows = open.slice().sort(function(a,b){ return (urgent(b)-urgent(a)) || (b.days-a.days); });
+      if (!rows.length) { var tr0 = document.createElement('tr'); var td0 = cell('אין שגיאות פתוחות. הכול שולם.'); td0.colSpan = 7; tr0.appendChild(td0); tbody.appendChild(tr0); }
+      rows.forEach(function(r){
+        var tr = document.createElement('tr');
+        var who = document.createElement('td');
+        var b = document.createElement('div'); b.textContent = r.n; b.style.fontWeight = '600';
+        var ph = document.createElement('div'); ph.textContent = r.p; ph.className = 'note num-cell';
+        if (urgent(r)) { var pill = document.createElement('span'); pill.className = 'pill bad'; pill.textContent = 'דחוף'; b.appendChild(document.createTextNode(' ')); b.appendChild(pill); }
+        who.appendChild(b); who.appendChild(ph);
+        tr.appendChild(who);
+        tr.appendChild(cell(r.prod));
+        tr.appendChild(cell(shekel(r.sum), 'num-cell'));
+        tr.appendChild(cell(r.why));
+        tr.appendChild(cell(String(r.tries), 'num-cell'));
+        tr.appendChild(cell(String(r.days), 'num-cell'));
+        var act = document.createElement('td');
+        var btn = document.createElement('button'); btn.className = 'done'; btn.textContent = 'טיפלתי';
+        btn.addEventListener('click', function(){
+          open.splice(open.indexOf(r), 1);
+          closed.unshift({n:r.n, prod:r.prod, sum:r.sum, how:'טופל ידנית', when:'עכשיו'});
+          render();
+        });
+        act.appendChild(btn); tr.appendChild(act);
+        tbody.appendChild(tr);
+      });
+    } else {
+      closed.forEach(function(r){
+        var tr = document.createElement('tr');
+        tr.appendChild(cell(r.n));
+        tr.appendChild(cell(r.prod));
+        tr.appendChild(cell(shekel(r.sum), 'num-cell'));
+        var td = document.createElement('td'); var pill = document.createElement('span');
+        pill.className = 'pill good'; pill.textContent = r.how; td.appendChild(pill); tr.appendChild(td);
+        tr.appendChild(cell(r.when));
+        tbody.appendChild(tr);
+      });
+    }
+    document.getElementById('k-open').textContent = open.length;
+    document.getElementById('k-sum').textContent = shekel(open.reduce(function(s,r){ return s + r.sum; }, 0));
+  }
+  var tOpen = document.getElementById('tab-open'), tClosed = document.getElementById('tab-closed');
+  function setView(v){ view = v; tOpen.setAttribute('aria-selected', v === 'open'); tClosed.setAttribute('aria-selected', v === 'closed'); render(); }
+  tOpen.addEventListener('click', function(){ setView('open'); });
+  tClosed.addEventListener('click', function(){ setView('closed'); });
+  render();
+
+})();
+</script>
